@@ -3,6 +3,8 @@ import time
 import utils
 from config import cfg
 from CartDAO import *
+from ItemDAO import *
+from OrderDAO import *
 
 FOLLOWER = 0
 CANDIDATE = 1
@@ -203,7 +205,7 @@ class Node():
     def init_timeout(self):
         self.reset_timeout()
         # safety guarantee, timeout thread may expire after election
-        if self.timeout_thread and self.timeout_thread.isAlive():
+        if self.timeout_thread and self.timeout_thread.is_alive():
             return
         print('created thread')
         self.timeout_thread = threading.Thread(target=self.timeout_loop)
@@ -297,5 +299,44 @@ class Node():
             if query_type == "cart" and query_key == "get_cart_items" :
                 cart_dao = CartDAO()
                 response = cart_dao.get_cart_items(self.staged["cart_id"])
+            if query_type == "cart" and query_key == "delete_cart" :
+                cart_dao = CartDAO()
+                response = cart_dao.delete_cart(self.staged["cart_id"])
+            if query_type == "cart" and query_key == "update_cart_quantity" :
+                cart_dao = CartDAO()
+                response = cart_dao.update_cart_quantity(self.staged["cart_id"],self.staged["item_id"],
+                                                         self.staged["quantity_change"])
+
+            if query_type=="item" and query_key=="add_item":
+                item_dao=ItemDAO()
+                response=item_dao.add_item(self.staged["item_id"],self.staged["category"],self.staged["seller_id"],
+                                           self.staged["name"],self.staged["quantity"], self.staged["sale_price"],
+                                           self.staged["keywords"],self.staged["condition"])
+            if query_type=="item" and query_key=="update_price":
+                item_dao=ItemDAO()
+                response=item_dao.update_item_price(self.staged["item_id"],self.staged["sale_price"])
+            if query_type=="item" and query_key=="get_item":
+                item_dao=ItemDAO()
+                response=item_dao.get_item(self.staged["item_id"])
+            if query_type=="item" and query_key=="get_seller_items":
+                item_dao=ItemDAO()
+                response=item_dao.get_items_by_seller_id(self.staged["seller_id"])
+            if query_type=="item" and query_key=="update_quantity":
+                item_dao=ItemDAO()
+                response=item_dao.update_item_quantity(self.staged["item_id"],self.staged["quantity"])
+            if query_type=="item" and query_key=="get_items_bycat":
+                item_dao=ItemDAO()
+                response=item_dao.get_items_by_category_and_keywords(self.staged["category"],self.staged["keywords"])
+
+            if query_type=="order" and query_key=="create_order":
+                order_dao= OrderDAO()
+                response= order_dao.create_order(self.staged["buyer_id"],self.staged["status"],self.staged["transaction_id"])
+            if query_type=="order" and query_key=="update_order":
+                order_dao= OrderDAO()
+                response= order_dao.create_order(self.staged["status"],self.staged["transaction_id"])
+            if query_type=="order" and query_key=="update_item":
+                order_dao= OrderDAO()
+                response= order_dao.create_order(self.staged["order_id"],self.staged["quantity"],self.staged["item_id"])
+
         self.staged = None
         return response

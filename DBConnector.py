@@ -2,8 +2,8 @@ import psycopg2
 from psycopg2 import Error
 
 class DBConnector:
-    customer_db_url = "dbname=customer user=postgres password=tarun1997 host=localhost port=5432"
-    product_db_url = "dbname=product user=postgres password=tarun1997 host=localhost port=5432"
+    customer_db_url = "dbname=customer user=postgres password=admin host=localhost port=5432"
+    product_db_url = "dbname=product user=postgres password=admin host=localhost port=5432"
 
     @staticmethod
     def get_customer_connection():
